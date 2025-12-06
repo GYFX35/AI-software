@@ -1,6 +1,7 @@
 """
 This module contains functions for programming microchips.
 """
+from neurochip.microchip.cyber_security import analyze_security
 
 def program_microchip(microchip_id, firmware):
     """
@@ -17,4 +18,9 @@ def program_microchip(microchip_id, firmware):
     # In a real implementation, this would involve communicating with the hardware.
     # For this placeholder, we'll just simulate success.
     print("Microchip programmed successfully.")
+
+    # Analyze the firmware for security vulnerabilities
+    security_report = analyze_security(firmware.decode('utf-8', errors='ignore'))
+    print(security_report)
+
     return True
