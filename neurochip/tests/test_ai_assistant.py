@@ -17,6 +17,18 @@ class TestAIAssistant(unittest.TestCase):
         self.assertIn("analogRead", code)
         self.assertIn("Serial.println", code)
 
+    def test_generate_heart_rate_code(self):
+        prompt = "Measure heart rate"
+        code = generate_microchip_code(prompt)
+        self.assertIn("HEART_PIN", code)
+        self.assertIn("Heartbeat detected!", code)
+
+    def test_generate_seizure_alert_code(self):
+        prompt = "Seizure alert system"
+        code = generate_microchip_code(prompt)
+        self.assertIn("NEURAL_PIN", code)
+        self.assertIn("MEDICAL ALERT", code)
+
     def test_generate_unknown_code(self):
         prompt = "Do something else"
         code = generate_microchip_code(prompt)

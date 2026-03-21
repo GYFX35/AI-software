@@ -52,5 +52,45 @@ void loop() {
   delay(2000);
 }
 """
+    elif "heart" in prompt and "rate" in prompt:
+        return """
+// C++ code to measure heart rate using an ECG-like signal
+const int HEART_PIN = A1;
+const int THRESHOLD = 600;
+
+void setup() {
+  Serial.begin(115200);
+}
+
+void loop() {
+  int heartValue = analogRead(HEART_PIN);
+  if (heartValue > THRESHOLD) {
+    Serial.println("Heartbeat detected!");
+  }
+  delay(10);
+}
+"""
+    elif "seizure" in prompt or "medical alert" in prompt:
+        return """
+// C++ code for a medical alert system (simulated seizure detection)
+const int NEURAL_PIN = A2;
+const int ALERT_LED = 12;
+
+void setup() {
+  pinMode(ALERT_LED, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int neuralValue = analogRead(NEURAL_PIN);
+  if (neuralValue > 800) {
+    digitalWrite(ALERT_LED, HIGH);
+    Serial.println("MEDICAL ALERT: Potential seizure activity detected!");
+  } else {
+    digitalWrite(ALERT_LED, LOW);
+  }
+  delay(100);
+}
+"""
     else:
         return "// Sorry, I can't generate code for that prompt yet."
