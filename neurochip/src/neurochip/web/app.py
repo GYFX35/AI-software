@@ -20,6 +20,15 @@ CORS(app)
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    return jsonify({
+        'microchip_projects': 124,
+        'neuro_analyses': 850,
+        'security_scans': 312,
+        'active_users': 12
+    })
+
 @app.route('/api/generate_code', methods=['POST'])
 def api_generate_code():
     data = request.json

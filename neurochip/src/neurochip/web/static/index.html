@@ -3,88 +3,499 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neurochip AI Assistant</title>
+    <title>Neurochip AI | Advanced Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-item:hover { background-color: rgba(99, 102, 241, 0.1); }
+        .active-tab { border-left: 4px solid #6366f1; background-color: rgba(99, 102, 241, 0.1); color: #6366f1; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .code-editor { font-family: 'Fira Code', 'Courier New', Courier, monospace; }
+        pre { scrollbar-width: thin; scrollbar-color: #4b5563 #1f2937; }
+        pre::-webkit-scrollbar { width: 8px; }
+        pre::-webkit-scrollbar-track { background: #1f2937; }
+        pre::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto p-8">
-        <header class="mb-8 text-center">
-            <h1 class="text-4xl font-bold text-indigo-700">Neurochip AI Dashboard</h1>
-            <p class="text-gray-600">AI-powered tools for Microchip development and Neuroscience research.</p>
+<body class="bg-gray-50 text-gray-900 overflow-hidden h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col hidden md:flex">
+        <div class="p-6 flex items-center space-x-3">
+            <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
+                <i class="fas fa-brain text-xl"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight">Neurochip <span class="text-indigo-600">AI</span></span>
+        </div>
+        <nav class="mt-6 flex-1 px-4 space-y-2">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 active-tab">
+                <i class="fas fa-th-large"></i>
+                <span class="font-medium">Dashboard</span>
+            </button>
+            <button onclick="switchTab('microchip')" id="nav-microchip" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-500">
+                <i class="fas fa-microchip"></i>
+                <span class="font-medium">Microchip AI</span>
+            </button>
+            <button onclick="switchTab('neuroscience')" id="nav-neuroscience" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-500">
+                <i class="fas fa-wave-square"></i>
+                <span class="font-medium">Neuroscience</span>
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-500">
+                <i class="fas fa-cog"></i>
+                <span class="font-medium">Settings</span>
+            </button>
+        </nav>
+        <div class="p-6 border-t border-gray-200">
+            <div class="bg-indigo-50 rounded-2xl p-4">
+                <p class="text-xs font-semibold text-indigo-600 uppercase mb-1">Current Plan</p>
+                <p class="text-sm font-bold text-gray-800 mb-3">Enterprise Pro</p>
+                <button class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">Manage</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-gray-50">
+        <!-- Topbar -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-10">
+            <div class="flex items-center space-x-4">
+                <h2 id="page-title" class="text-xl font-bold">Dashboard Overview</h2>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                    <button class="text-gray-400 hover:text-indigo-600"><i class="fas fa-bell"></i></button>
+                </div>
+                <div class="h-8 w-px bg-gray-200"></div>
+                <div class="flex items-center space-x-3">
+                    <div class="text-right">
+                        <p class="text-sm font-bold">Dr. Jane Smith</p>
+                        <p class="text-xs text-gray-500">Chief Researcher</p>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=6366f1&color=fff" class="w-10 h-10 rounded-full" alt="User">
+                </div>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Microchip Section -->
-            <section class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4 text-indigo-600 border-b pb-2">Microchip AI Assistant</h2>
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto p-8">
 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Generate Code</label>
-                    <input type="text" id="codePrompt" placeholder="e.g., Blink an LED every 1 second" class="w-full p-2 border rounded focus:ring-indigo-500 focus:border-indigo-500">
-                    <button onclick="generateCode()" class="mt-2 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Generate</button>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Generated Code</label>
-                    <pre id="codeOutput" class="bg-gray-900 text-green-400 p-3 rounded h-48 overflow-y-auto text-xs"></pre>
-                </div>
-
-                <div class="mb-4">
-                    <button onclick="analyzeSecurity()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Analyze Security</button>
-                </div>
-                <div id="securityReport" class="mt-2 p-3 bg-red-50 text-red-700 border border-red-200 rounded hidden"></div>
-            </section>
-
-            <!-- Neuroscience Section -->
-            <section class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4 text-indigo-600 border-b pb-2">Neuroscience Diagnostics</h2>
-
-                <p class="text-sm text-gray-600 mb-4">Simulate diagnostic data analysis.</p>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">ECG & Neural Signal Simulation</label>
-                    <div class="flex space-x-2">
-                        <button onclick="simulateNormal()" class="flex-1 bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700">Normal</button>
-                        <button onclick="simulateHighHR()" class="flex-1 bg-yellow-600 text-white px-3 py-2 rounded text-sm hover:bg-yellow-700">High HR</button>
-                        <button onclick="simulateSeizure()" class="flex-1 bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700">Seizure</button>
+            <!-- Dashboard Tab -->
+            <div id="tab-dashboard" class="space-y-8 animate-in fade-in duration-500">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                        <span class="text-gray-500 text-sm font-medium">Microchip Projects</span>
+                        <span id="stat-microchip" class="text-3xl font-bold mt-2">0</span>
+                        <div class="mt-4 flex items-center text-green-500 text-xs font-bold">
+                            <i class="fas fa-arrow-up mr-1"></i> 12% increase
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                        <span class="text-gray-500 text-sm font-medium">Neuro Analyses</span>
+                        <span id="stat-neuro" class="text-3xl font-bold mt-2">0</span>
+                        <div class="mt-4 flex items-center text-green-500 text-xs font-bold">
+                            <i class="fas fa-arrow-up mr-1"></i> 24% increase
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                        <span class="text-gray-500 text-sm font-medium">Security Scans</span>
+                        <span id="stat-security" class="text-3xl font-bold mt-2">0</span>
+                        <div class="mt-4 flex items-center text-blue-500 text-xs font-bold">
+                            <i class="fas fa-check mr-1"></i> Stable performance
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                        <span class="text-gray-500 text-sm font-medium">Active Nodes</span>
+                        <span id="stat-users" class="text-3xl font-bold mt-2">0</span>
+                        <div class="mt-4 flex items-center text-indigo-500 text-xs font-bold">
+                            <i class="fas fa-plug mr-1"></i> Real-time sync
+                        </div>
                     </div>
                 </div>
 
-                <div id="diagnosisResults" class="p-4 bg-blue-50 border border-blue-200 rounded hidden">
-                    <h3 class="font-bold text-blue-800 mb-2">Results:</h3>
-                    <p id="hrResult"></p>
-                    <p id="seizureResult"></p>
-                    <p id="diagnosisMsg" class="mt-2 font-semibold"></p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-gray-800 mb-6">Recent Activity</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600"><i class="fas fa-code"></i></div>
+                                <div>
+                                    <p class="text-sm font-bold">Firmware code generated</p>
+                                    <p class="text-xs text-gray-500">For ESP32 project "Neuro-Link-A1"</p>
+                                    <p class="text-[10px] text-gray-400 mt-1">2 mins ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600"><i class="fas fa-shield-alt"></i></div>
+                                <div>
+                                    <p class="text-sm font-bold">Security Vulnerability Detected</p>
+                                    <p class="text-xs text-gray-500">Buffer overflow risk in memory management</p>
+                                    <p class="text-[10px] text-gray-400 mt-1">15 mins ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600"><i class="fas fa-heartbeat"></i></div>
+                                <div>
+                                    <p class="text-sm font-bold">Diagnosis Complete</p>
+                                    <p class="text-xs text-gray-500">Patient #4928 - Normal condition</p>
+                                    <p class="text-[10px] text-gray-400 mt-1">1 hour ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-gray-800 mb-6">Processing Load</h3>
+                        <canvas id="loadChart" height="200"></canvas>
+                    </div>
                 </div>
-            </section>
+            </div>
+
+            <!-- Microchip Tab -->
+            <div id="tab-microchip" class="hidden space-y-6 animate-in fade-in duration-500">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold mb-2">Microchip AI Assistant</h3>
+                    <p class="text-gray-500 text-sm mb-6">Describe your microcontroller requirements and let AI generate optimized C++ code.</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Instruction Prompt</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="codePrompt" placeholder="e.g., Setup I2C for SSD1306 display on Arduino" class="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition">
+                                <button onclick="generateCode(this)" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition flex items-center space-x-2">
+                                    <i class="fas fa-magic"></i>
+                                    <span>Generate</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="text-sm font-semibold">Generated Code</label>
+                                    <button class="text-xs text-indigo-600 font-bold hover:underline">Copy Code</button>
+                                </div>
+                                <div class="bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-800">
+                                    <div class="bg-gray-800 px-4 py-2 flex items-center space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                        <span class="text-xs text-gray-400 ml-4">firmware.cpp</span>
+                                    </div>
+                                    <pre id="codeOutput" class="p-6 text-green-400 text-sm h-[400px] overflow-y-auto code-editor whitespace-pre-wrap">// Waiting for prompt...</pre>
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="text-sm font-semibold text-red-600">Security Analysis</label>
+                                    <button onclick="analyzeSecurity()" class="text-xs bg-red-50 text-red-600 px-2 py-1 rounded-md font-bold hover:bg-red-100 transition">Run Security Scan</button>
+                                </div>
+                                <div id="securityPlaceholder" class="flex-1 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center p-8 text-center">
+                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4">
+                                        <i class="fas fa-shield-virus text-2xl"></i>
+                                    </div>
+                                    <p class="text-sm text-gray-400">Generate code and click 'Run Security Scan' to analyze vulnerabilities.</p>
+                                </div>
+                                <div id="securityReport" class="hidden flex-1 bg-red-50 border border-red-100 rounded-2xl p-6 overflow-y-auto h-[400px]">
+                                    <div class="flex items-center space-x-2 text-red-700 font-bold mb-4">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Security Findings</span>
+                                    </div>
+                                    <div id="securityContent" class="text-sm text-red-800 space-y-4"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Neuroscience Tab -->
+            <div id="tab-neuroscience" class="hidden space-y-6 animate-in fade-in duration-500">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-bold mb-2">Simulation Control</h3>
+                            <p class="text-gray-500 text-sm mb-6">Select a simulation profile to analyze real-time diagnostic signals.</p>
+
+                            <div class="space-y-3">
+                                <button onclick="simulateProfile('normal')" class="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-indigo-600 hover:bg-indigo-50 transition-all duration-200 group">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-check-circle"></i></div>
+                                        <div class="text-left">
+                                            <p class="font-bold text-sm">Normal Rhythm</p>
+                                            <p class="text-xs text-gray-500">Healthy baseline</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-300 group-hover:text-indigo-600"></i>
+                                </button>
+                                <button onclick="simulateProfile('high')" class="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-indigo-600 hover:bg-indigo-50 transition-all duration-200 group">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="fas fa-bolt"></i></div>
+                                        <div class="text-left">
+                                            <p class="font-bold text-sm">Tachycardia</p>
+                                            <p class="text-xs text-gray-500">Elevated heart rate</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-300 group-hover:text-indigo-600"></i>
+                                </button>
+                                <button onclick="simulateProfile('seizure')" class="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-indigo-600 hover:bg-indigo-50 transition-all duration-200 group">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center"><i class="fas fa-brain"></i></div>
+                                        <div class="text-left">
+                                            <p class="font-bold text-sm">Neural Seizure</p>
+                                            <p class="text-xs text-gray-500">High amplitude spikes</p>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-300 group-hover:text-indigo-600"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="diagnosisCard" class="bg-indigo-600 p-8 rounded-2xl shadow-lg text-white hidden animate-in zoom-in duration-300">
+                            <h4 class="font-bold mb-4 flex items-center">
+                                <i class="fas fa-clipboard-check mr-2"></i>
+                                Diagnostic Report
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="flex justify-between border-b border-indigo-500 pb-2">
+                                    <span class="text-indigo-100 text-sm">Heart Rate</span>
+                                    <span id="hrResult" class="font-bold">--</span>
+                                </div>
+                                <div class="flex justify-between border-b border-indigo-500 pb-2">
+                                    <span class="text-indigo-100 text-sm">Seizure Status</span>
+                                    <span id="seizureResult" class="font-bold">--</span>
+                                </div>
+                                <div class="pt-2">
+                                    <span class="text-indigo-100 text-sm block mb-1">Conclusion:</span>
+                                    <p id="diagnosisMsg" class="font-bold text-lg">Waiting for scan...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-gray-800 mb-4">ECG Signal (Live)</h3>
+                            <canvas id="ecgChart" height="150"></canvas>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-gray-800 mb-4">Neural Activity</h3>
+                            <canvas id="neuralChart" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab (Mockup) -->
+            <div id="tab-settings" class="hidden space-y-6 animate-in fade-in duration-500">
+                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-2xl">
+                    <h3 class="text-xl font-bold mb-6">Account Settings</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-bold">Email Notifications</p>
+                                <p class="text-sm text-gray-500">Receive alerts when security scans find issues.</p>
+                            </div>
+                            <div class="w-12 h-6 bg-indigo-600 rounded-full relative">
+                                <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-bold">Cloud Sync</p>
+                                <p class="text-sm text-gray-500">Sync neurochip projects across all devices.</p>
+                            </div>
+                            <div class="w-12 h-6 bg-gray-200 rounded-full relative">
+                                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                            </div>
+                        </div>
+                        <hr>
+                        <button class="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-100 transition">Logout Session</button>
+                    </div>
+                 </div>
+            </div>
+
         </div>
-    </div>
+    </main>
 
     <script>
-        async function generateCode() {
-            const prompt = document.getElementById('codePrompt').value;
-            const res = await fetch('/api/generate_code', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt })
+        // Charts Initialization
+        let loadChart, ecgChart, neuralChart;
+
+        function initCharts() {
+            const ctxLoad = document.getElementById('loadChart').getContext('2d');
+            loadChart = new Chart(ctxLoad, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Neural Processing Load',
+                        data: [65, 59, 80, 81, 56, 95],
+                        borderColor: '#6366f1',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+                }
             });
-            const data = await res.json();
-            document.getElementById('codeOutput').textContent = data.code;
-            document.getElementById('securityReport').classList.add('hidden');
+
+            const ecgCtx = document.getElementById('ecgChart').getContext('2d');
+            ecgChart = new Chart(ecgCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 50}, (_, i) => i),
+                    datasets: [{
+                        label: 'ECG',
+                        data: Array.from({length: 50}, () => 0),
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: false,
+                    scales: { y: { display: false }, x: { display: false } }
+                }
+            });
+
+            const neuralCtx = document.getElementById('neuralChart').getContext('2d');
+            neuralChart = new Chart(neuralCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 50}, (_, i) => i),
+                    datasets: [{
+                        label: 'Neural',
+                        data: Array.from({length: 50}, () => 0),
+                        borderColor: '#f43f5e',
+                        borderWidth: 1,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: false,
+                    scales: { y: { display: false }, x: { display: false } }
+                }
+            });
+        }
+
+        // Tab Switching
+        function switchTab(tabId) {
+            // Update UI
+            document.querySelectorAll('main > div > div').forEach(tab => tab.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active-tab');
+                item.classList.add('text-gray-500');
+            });
+            document.getElementById('nav-' + tabId).classList.add('active-tab');
+            document.getElementById('nav-' + tabId).classList.remove('text-gray-500');
+
+            document.getElementById('page-title').textContent = tabId.charAt(0).toUpperCase() + tabId.slice(1) + (tabId === 'dashboard' ? ' Overview' : '');
+
+            if (tabId === 'dashboard' && !loadChart) initCharts();
+        }
+
+        // Fetch Stats
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('stat-microchip').textContent = data.microchip_projects;
+                document.getElementById('stat-neuro').textContent = data.neuro_analyses;
+                document.getElementById('stat-security').textContent = data.security_scans;
+                document.getElementById('stat-users').textContent = data.active_users;
+            } catch (e) { console.error("Failed to fetch stats", e); }
+        }
+
+        // AI Assistant Logic
+        async function generateCode(btn) {
+            const prompt = document.getElementById('codePrompt').value;
+            if (!prompt) return;
+
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Generating...</span>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/generate_code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await res.json();
+                document.getElementById('codeOutput').textContent = data.code;
+
+                // Reset security
+                document.getElementById('securityPlaceholder').classList.remove('hidden');
+                document.getElementById('securityReport').classList.add('hidden');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         }
 
         async function analyzeSecurity() {
             const code = document.getElementById('codeOutput').textContent;
-            if (!code) return;
+            if (!code || code === "// Waiting for prompt...") return;
+
             const res = await fetch('/api/analyze_security', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code })
             });
             const data = await res.json();
+
+            document.getElementById('securityPlaceholder').classList.add('hidden');
             const reportDiv = document.getElementById('securityReport');
-            reportDiv.innerHTML = `<pre class="whitespace-pre-wrap">${data.report}</pre>`;
+            const contentDiv = document.getElementById('securityContent');
+
+            contentDiv.innerHTML = data.report.split('\n').map(line =>
+                `<div class="flex items-start space-x-2">
+                    <span class="w-1 h-1 bg-red-400 rounded-full mt-2"></span>
+                    <span>${line}</span>
+                </div>`
+            ).join('');
+
             reportDiv.classList.remove('hidden');
+        }
+
+        // Neuroscience Logic
+        function simulateProfile(profile) {
+            let ecg, neural;
+            if (profile === 'normal') {
+                ecg = Array.from({length: 1000}, (_, i) => Math.sin(i * 0.1) + (i % 80 === 0 ? 5 : 0));
+                neural = Array.from({length: 1000}, () => Math.random());
+            } else if (profile === 'high') {
+                ecg = Array.from({length: 1000}, (_, i) => Math.sin(i * 0.1) + (i % 40 === 0 ? 5 : 0));
+                neural = Array.from({length: 1000}, () => Math.random());
+            } else {
+                ecg = Array.from({length: 1000}, (_, i) => Math.sin(i * 0.1) + (i % 80 === 0 ? 5 : 0));
+                // Add high amplitude spikes for seizure
+                neural = Array.from({length: 1000}, (_, i) => Math.random() + (i % 100 === 0 ? 50 : 0));
+            }
+
+            // Update charts
+            updateSignalCharts(ecg.slice(0, 50), neural.slice(0, 50));
+            runDiagnosis(ecg, neural);
+        }
+
+        function updateSignalCharts(ecgData, neuralData) {
+            ecgChart.data.datasets[0].data = ecgData;
+            ecgChart.update();
+            neuralChart.data.datasets[0].data = neuralData;
+            neuralChart.update();
         }
 
         async function runDiagnosis(ecg, neural) {
@@ -98,32 +509,18 @@
                 })
             });
             const data = await res.json();
-            const resultsDiv = document.getElementById('diagnosisResults');
-            document.getElementById('hrResult').textContent = `Heart Rate: ${data.heart_rate.toFixed(1)} BPM`;
-            document.getElementById('seizureResult').textContent = `Seizure Detected: ${data.seizure_detected ? 'YES' : 'No'}`;
+
+            document.getElementById('diagnosisCard').classList.remove('hidden');
+            document.getElementById('hrResult').textContent = `${data.heart_rate.toFixed(1)} BPM`;
+            document.getElementById('seizureResult').textContent = data.seizure_detected ? 'YES (Critical)' : 'Normal';
             document.getElementById('diagnosisMsg').textContent = data.diagnosis;
-            resultsDiv.classList.remove('hidden');
         }
 
-        function simulateNormal() {
-            // Generate a simple sine-wave ECG and low amplitude noise for neural
-            const ecg = Array.from({length: 1000}, (_, i) => Math.sin(i * 0.1) + (i % 80 === 0 ? 5 : 0));
-            const neural = Array.from({length: 1000}, () => Math.random());
-            runDiagnosis(ecg, neural);
-        }
-
-        function simulateHighHR() {
-            // Faster peaks
-            const ecg = Array.from({length: 1000}, (_, i) => Math.sin(i * 0.1) + (i % 40 === 0 ? 5 : 0));
-            const neural = Array.from({length: 1000}, () => Math.random());
-            runDiagnosis(ecg, neural);
-        }
-
-        function simulateSeizure() {
-            const ecg = Array.from({length: 1000}, (_, i) => Math.sin(i * 0.1) + (i % 80 === 0 ? 5 : 0));
-            const neural = Array.from({length: 1000}, () => Math.random() * 20); // High amplitude
-            runDiagnosis(ecg, neural);
-        }
+        // Init
+        window.onload = () => {
+            initCharts();
+            fetchStats();
+        };
     </script>
 </body>
 </html>
